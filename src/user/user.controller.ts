@@ -11,17 +11,22 @@ import {
 import { HttpCode } from '@nestjs/common/decorators';
 import { GetUsersDto, SignUpDto, UpdateUserDto } from './user.dto';
 import { UserService } from './user.service';
+import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { UserEntity } from './user.entity';
 
 @Controller('users')
+@ApiTags('User')
 export class UserController {
   constructor(private userService: UserService) {}
 
   @Post('signup')
+  @ApiCreatedResponse({ type: UserEntity })
   async signup(@Body() data: SignUpDto) {
     return this.userService.create(data);
   }
 
   @Get('')
+  @ApiOkResponse({ type: UserEntity, isArray: true })
   async getUsers(@Query() query: GetUsersDto) {
     const filter = query.isDeleted
       ? { NOT: { deleted_at: null } }
@@ -31,6 +36,7 @@ export class UserController {
   }
 
   @Get(':id')
+  @ApiOkResponse({ type: UserEntity })
   async getUser(@Param('id') id: string) {
     return this.userService.getOne(id);
   }
