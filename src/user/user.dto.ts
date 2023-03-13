@@ -16,17 +16,17 @@ export class SignUpDto {
 
   @IsString()
   @IsOptional()
-  fullname: string;
+  fullname?: string;
 }
 
 export class UpdateUserDto {
   @IsString()
   @IsOptional()
-  fullname: string;
+  fullname?: string;
 
   @IsString()
   @IsOptional()
-  password: string;
+  password?: string;
 }
 
 export class GetUsersDto {
