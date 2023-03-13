@@ -6,19 +6,39 @@ import { SignUpDto } from './user.dto';
 export class UserService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  create(data: SignUpDto) {
-    return this.prismaService.user.create({ data });
+  async create(data: SignUpDto) {
+    const result = await this.prismaService.user.create({ data });
+    return this.exclude(result, ['password']);
   }
 
-  getAll(take: number, skip: number, where) {
-    return this.prismaService.user.findMany({ take, skip, where });
+  async getAll(take: number, skip: number, where) {
+    const result = await this.prismaService.user.findMany({
+      take,
+      skip,
+      where,
+    });
+    return result.map((i) => this.exclude(i, ['password']));
   }
 
-  getOne(id: string) {
-    return this.prismaService.user.findUniqueOrThrow({ where: { id } });
+  async getOne(id: string) {
+    const result = await this.prismaService.user.findUniqueOrThrow({
+      where: { id },
+    });
+    return this.exclude(result, ['password']);
   }
 
   update(id: string, data) {
     return this.prismaService.user.update({ where: { id }, data });
+  }
+
+  // Exclude keys from user
+  private exclude<User, Key extends keyof User>(
+    user: User,
+    keys: Key[],
+  ): Omit<User, Key> {
+    for (const key of keys) {
+      delete user[key];
+    }
+    return user;
   }
 }
